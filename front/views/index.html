@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    {{> head}}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo {
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .logo .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .game-form {
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            text-align: left;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .code-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e6ed;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .code-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .code-input::placeholder {
+            color: #bdc3c7;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 140px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 87, 108, 0.3);
+        }
+
+        .error-message {
+            background: #ff6b6b;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .chess-icon {
+            font-size: 1.2rem;
+            margin-right: 8px;
+        }
+
+        .features {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e6ed;
+        }
+
+        .features h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            text-align: left;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            color: #7f8c8d;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .feature-list li:before {
+            content: "♟";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .logo h1 {
+                font-size: 2rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+
+            .input-group {
+                margin-bottom: 20px;
+            }
+
+            .code-input {
+                padding: 12px 16px;
+                font-size: 0.9rem;
+            }
+        }
+
+        .loading {
+            display: none;
+            margin-left: 10px;
+        }
+
+        .loading:after {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>♔ Chess Game</h1>
+            <p class="subtitle">Chơi cờ vua trực tuyến với bạn bè</p>
+        </div>
+
+        <div class="game-form">
+            <div class="input-group">
+                <label for="playerNameInput">Tên người chơi:</label>
+                <input type="text" id="playerNameInput" class="code-input" placeholder="Nhập tên của bạn (tùy chọn)" maxlength="20">
+            </div>
+
+            <div class="input-group">
+                <label for="codeInput">Mã phòng chơi:</label>
+                <input type="text" id="codeInput" class="code-input" placeholder="Nhập mã phòng hoặc để trống để tạo phòng mới">
+            </div>
+
+            <div class="button-group">
+                <button id="createGame" class="btn btn-primary">
+                    <span class="chess-icon">♔</span>
+                    Tạo phòng
+                    <span class="loading"></span>
+                </button>
+                <button id="joinGame" class="btn btn-secondary">
+                    <span class="chess-icon">♕</span>
+                    Tham gia
+                    <span class="loading"></span>
+                </button>
+            </div>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+
+        <div class="features">
+            <h3>Tính năng:</h3>
+            <ul class="feature-list">
+                <li>Chơi cờ vua real-time</li>
+                <li>Giao diện đẹp và dễ sử dụng</li>
+                <li>Hỗ trợ nhiều thiết bị</li>
+                <li>Kết nối nhanh và ổn định</li>
+                <li>Chức năng rematch</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Xử lý tạo phòng
+            $('#createGame').on('click', function() {
+                const code = $('#codeInput').val().trim();
+                const playerName = $('#playerNameInput').val().trim();
+                const $btn = $(this);
+                const $loading = $btn.find('.loading');
+                
+                // Validate player name
+                if (playerName && playerName.length < 2) {
+                    showError('Tên người chơi phải có ít nhất 2 ký tự!');
+                    return;
+                }
+                
+                if (playerName && playerName.length > 20) {
+                    showError('Tên người chơi không được quá 20 ký tự!');
+                    return;
+                }
+                
+                $btn.prop('disabled', true);
+                $loading.show();
+                
+                setTimeout(() => {
+                    let url = '/white?code=' + encodeURIComponent(code);
+                    if (playerName) {
+                        url += '&name=' + encodeURIComponent(playerName);
+                    }
+                    window.location.replace(url);
+                }, 500);
+            });
+
+            // Xử lý tham gia phòng
+            $('#joinGame').on('click', function() {
+                const code = $('#codeInput').val().trim();
+                const playerName = $('#playerNameInput').val().trim();
+                const $btn = $(this);
+                const $loading = $btn.find('.loading');
+                
+                if (!code) {
+                    showError('Vui lòng nhập mã phòng để tham gia!');
+                    return;
+                }
+                
+                // Validate player name
+                if (playerName && playerName.length < 2) {
+                    showError('Tên người chơi phải có ít nhất 2 ký tự!');
+                    return;
+                }
+                
+                if (playerName && playerName.length > 20) {
+                    showError('Tên người chơi không được quá 20 ký tự!');
+                    return;
+                }
+                
+                $btn.prop('disabled', true);
+                $loading.show();
+                
+                setTimeout(() => {
+                    let url = '/black?code=' + encodeURIComponent(code);
+                    if (playerName) {
+                        url += '&name=' + encodeURIComponent(playerName);
+                    }
+                    window.location.replace(url);
+                }, 500);
+            });
+
+            // Xử lý nhập liệu
+            $('#codeInput').on('keypress', function(e) {
+                if (e.which === 13) {
+                    const code = $(this).val().trim();
+                    if (code) {
+                        $('#joinGame').click();
+                    } else {
+                        $('#createGame').click();
+                    }
+                }
+            });
+
+            // Xử lý nhập liệu cho tên người chơi
+            $('#playerNameInput').on('keypress', function(e) {
+                if (e.which === 13) {
+                    $('#codeInput').focus();
+                }
+            });
+
+            // Hiển thị lỗi
+            function showError(message) {
+                $('#errorMessage').text(message).show();
+                setTimeout(() => {
+                    $('#errorMessage').fadeOut();
+                }, 3000);
+            }
+
+            // Kiểm tra lỗi từ URL
+            var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('error') == 'invalidCode') {
+                showError('Mã phòng không hợp lệ hoặc không tồn tại!');
+            }
+
+            // Focus vào input khi trang load
+            $('#playerNameInput').focus();
+        });
+    </script>
+</body>
+</html>
