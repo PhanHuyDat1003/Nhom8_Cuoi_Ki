@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    {{> head}}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            display: flex;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            align-items: flex-start;
+        }
+
+        .chess-section {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-section {
+            width: 350px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+
+        .chat-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #e0e6ed;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .chat-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .chat-header .status {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .player-info {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .player-name {
+            font-weight: 600;
+            color: white;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .player-color {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            color: white;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            max-width: 80%;
+        }
+
+        .message.own {
+            align-self: flex-end;
+        }
+
+        .message.other {
+            align-self: flex-start;
+        }
+
+        .message-content {
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 0.9rem;
+            word-wrap: break-word;
+        }
+
+        .message.own .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 6px;
+        }
+
+        .message.other .message-content {
+            background: #f1f3f4;
+            color: #2c3e50;
+            border-bottom-left-radius: 6px;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: #7f8c8d;
+            margin-top: 4px;
+            text-align: center;
+        }
+
+        .message.own .message-time {
+            text-align: right;
+        }
+
+        .message.other .message-time {
+            text-align: left;
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            border-top: 1px solid #e0e6ed;
+            background: #f8f9fa;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .chat-input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e6ed;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .send-btn {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .game-info {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .game-info h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        #status {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        #pgn {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #e0e6ed;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .rematch-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .rematch-section h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .rematch-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .rematch-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .rematch-btn.request {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .rematch-btn.request:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .rematch-btn.accept {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+        }
+
+        .rematch-btn.accept:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+
+        .rematch-btn.decline {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .rematch-btn.decline:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .rematch-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .rematch-status {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .rematch-section.hidden {
+            display: none;
+        }
+
+        .rematch-section {
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .rematch-btn {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .typing-indicator {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            font-style: italic;
+            padding: 5px 0;
+            display: none;
+        }
+
+        .system-message {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            background: #f1f3f4;
+            padding: 8px 12px;
+            border-radius: 12px;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .chat-section {
+                width: 100%;
+                height: 400px;
+            }
+
+            .chess-section {
+                padding: 20px;
+            }
+
+            #myBoard {
+                width: 100% !important;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+
+            .rematch-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .rematch-btn {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+
+        .emoji-picker {
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e6ed;
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 1000;
+        }
+
+        .emoji-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+
+        .emoji-btn:hover {
+            background: #f1f3f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="chess-section">
+            <div id="myBoard" style="width: 500px; margin: 0 auto;"></div>
+            
+            <div class="game-info">
+                <h4>Thông tin game:</h4>
+                <div id="status"></div>
+                <h4>PGN:</h4>
+                <div id="pgn"></div>
+            </div>
+
+            <div class="rematch-section hidden" id="rematchSection">
+                <h4>🎮 Chơi lại</h4>
+                <div class="rematch-buttons" id="rematchButtons">
+                    <button class="rematch-btn request" id="requestRematchBtn">Yêu cầu chơi lại</button>
+                    <button class="rematch-btn accept hidden" id="acceptRematchBtn">Đồng ý</button>
+                    <button class="rematch-btn decline hidden" id="declineRematchBtn">Từ chối</button>
+                </div>
+                <div class="rematch-status" id="rematchStatus"></div>
+            </div>
+        </div>
+
+        <div class="chat-section">
+            <div class="chat-header">
+                <h3>💬 Chat</h3>
+                <div class="status" id="chatStatus">Đang kết nối...</div>
+                <div class="player-info" id="playerInfo">
+                    <span class="player-name" id="playerNameDisplay"></span>
+                    <span class="player-color" id="playerColorDisplay"></span>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="system-message">
+                    Chào mừng bạn đến với game cờ vua! 🎉
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                Đối thủ đang nhập tin nhắn...
+            </div>
+
+            <div class="chat-input-container">
+                <div class="chat-input-group">
+                    <input type="text" id="chatInput" class="chat-input" placeholder="Nhập tin nhắn..." maxlength="200">
+                    <button id="sendBtn" class="send-btn">Gửi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let playerColor = '{{color}}';
+        let playerName = '{{playerName}}' || `Player_${Math.random().toString(36).substr(2, 5)}`;
+        console.log('Playing as ' + playerColor + ' with name: ' + playerName);
+    </script>
+    <script src="/public/js/index.js"></script>
+</body>
+</html>
